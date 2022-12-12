@@ -39,5 +39,25 @@ const logout = async (req, res) => {
     res.send("logout");
 }
 
+const updateUser = async (req, res) => {
+    const {firstName, lastName, email, location, picturePath} = req.body;
 
-export {register, login, logout};
+    if (!firstName || !lastName || !email || !location || ! picturePath) throw new BadRequestError("Please provide all values");
+
+    const user = await User.findOne({email});
+    if (!user) throw new NotFoundError("Invalid Credentials");
+
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.email = email;
+    user.location = location;
+    user.picturePath = picturePath;
+
+    await user.save();
+    const token = await user.createJWT();
+
+    res.status(StatusCodes.OK).json({user, token});
+}
+
+
+export {register, login, logout, updateUser};

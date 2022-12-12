@@ -17,7 +17,9 @@ const getUserFriends = async (req, res) => {
     const user = await User.findById(userId);
 
     const friends = await Promise.all(user.friends.map(id => User.findById(id)));
-    const formatedFriends = friends.map((friend) => {return {...friend}});
+    const formatedFriends = friends.map(({_id, firstName, lastName, location, occupation, picturePath}) => {
+        return {_id, firstName, lastName, location, occupation, picturePath};
+    });
 
     res.status(StatusCodes.OK).json(formatedFriends);
 }
@@ -33,14 +35,16 @@ const addRemoveFriend = async (req, res) => {
         friend.friends = friend.friends.filter(id => id !== id);
     } else {
         user.friends.push(friendId);
-        friend.friends.push(id);
+        friend.friends.push(userId);
     }
 
     await user.save();
     await friend.save();
 
     const friends = await Promise.all(user.friends.map(id => User.findById(id)));
-    const formatedFriends = friends.map((friend) => {return {...friend}});
+    const formatedFriends = friends.map(({_id, firstName, lastName, location, occupation, picturePath}) => {
+        return {_id, firstName, lastName, location, occupation, picturePath};
+    });
 
     res.status(StatusCodes.OK).json(formatedFriends);
 }

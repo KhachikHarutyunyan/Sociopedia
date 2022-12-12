@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import "express-async-errors";
 import dotenv from "dotenv";
-import multer from "multer";
+// import multer from "multer";
 import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
@@ -17,6 +17,7 @@ import authHandler from "./middleware/auth.js";
 // routes modules
 import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.js";
+import postRouter from "./routes/postRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,21 +36,22 @@ app.use(cors());
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 // File storage
-const storage = multer.diskStorage({
-    destination: function (res, cb) {
-        cb(null, "public/assets");
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    }
-});
+// const storage = multer.diskStorage({
+//     destination: function (res, cb) {
+//         cb(null, "public/assets");
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, file.originalname);
+//     }
+// });
 
-const upload = multer({ storage });
+// const upload = multer({ storage });
 
 
 // API routes
-app.use("/api/v1/auth", upload.single("picture"), authRouter);
+app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", authHandler, userRouter);
+app.use("/api/v1/posts", authHandler, postRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
