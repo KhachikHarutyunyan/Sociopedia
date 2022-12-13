@@ -1,11 +1,14 @@
 import { StatusCodes } from "http-status-codes";
 import Post from "../models/Post.js";
-import {BadRequestError, NotFoundError} from "../errors/index.js";
+import {BadRequestError, NotFoundError, UnauthorizedError} from "../errors/index.js";
 import User from "../models/User.js";
+import checkPermission from "../utils/checkPermission.js";
 
 const createPost = async (req, res) => {
-    const user = await User.findById(req.user.userId);
     const {description, picturePath} = req.body;
+    if (!description || !picturePath) throw new BadRequestError("Please provide all values");
+    
+    const user = await User.findById(req.user.userId);
     
     const post = await Post.create({description, picturePath, lastName: user.lastName,
              firstName: user.firstName, author: user._id, userPicturePath: user.picturePath, location: user.location});
@@ -62,8 +65,21 @@ const deletePost = async (req, res) => {
 }
 
 const likePost = async (req, res) => {
+    const {id} = req.params;
 
-    res.status(StatusCodes.OK).json({});
+    const post = await Post.findById(id);
+    const isLiked = post.likes.get(req.user.userId);
+
+    if (isLiked) {
+        post.likes.delete(req.user.userId);
+    } else {
+        post.likes.set(req.user.userId, true);
+    }
+
+    const updatedPost = await Post.findByIdAndUpdate(id, {likes: post.likes}, {new: true});
+
+    res.status(StatusCodes.OK).json({updatedPost});
 }
+
 
 export {getAllPosts, getSinglePost, getUserPosts, createPost, updatePost, deletePost, likePost};

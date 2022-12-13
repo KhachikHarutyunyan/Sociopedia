@@ -18,6 +18,7 @@ import authHandler from "./middleware/auth.js";
 import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 import postRouter from "./routes/postRoutes.js";
+import commentRouter from "./routes/commentRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,6 +53,7 @@ app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", authHandler, userRouter);
 app.use("/api/v1/posts", authHandler, postRouter);
+app.use("/api/v1/comments", authHandler, commentRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

@@ -1,6 +1,7 @@
 import express from "express";
-import {getAllPosts, getSinglePost, getUserPosts, createPost, updatePost, deletePost, likePost} from "../controller/postController.js";
+import {getAllPosts, getSinglePost, getUserPosts, createPost, updatePost, deletePost, likePost,} from "../controller/postController.js";
 import upload from "../utils/upload.js";
+
 const router = express.Router();
 
 router.route("/").get(getAllPosts).post(upload.single("picture"), createPost);
